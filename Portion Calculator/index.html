@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Portion Converter</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="https://unpkg.com/@sakun/system.css" />
+</head>
+<body>
+    <div class="window" style="width:30rem;">
+        <div class="title-bar"> 
+            <button aria-label="Close" class="close"></button>
+            <h1 class="title">Portion Converter</h1>
+            <button aria-label="Resize" class="resize"></button>
+        </div>
+        <div class="separator"></div>
+        
+        <div class="window-pane" id="window-pane">
+            Food:
+            <br>
+            <select id="food" required>
+                <option selected>---</option>
+              </select>
+            <br><br>
+            From (Unit):
+            <br>
+            <select id="fromUnit" required>
+                <option value="grams">Grams</option>
+                <option value="cups">Cups</option>
+                <option value="tablespoons">Tablespoons</option>
+                <option value="teaspoons">Teaspoons</option>
+                <option value="cans">Cans</option>
+                <option selected>---</option>
+            </select>
+            <br><br>
+            To (Unit):
+            <br>
+            <select id="toUnit" required>
+                <option value="grams">Grams</option>
+                <option value="cups">Cups</option>
+                <option value="tablespoons">Tablespoons</option>
+                <option value="teaspoons">Teaspoons</option>
+                <option value="cans">Cans</option>
+                <option selected>---</option>
+            </select>
+            <br><br>
+            Amount:
+            <br>
+            <input id="amount" aria-label="Example text box" type="number" placeholder="" required min="0"/>
+            <br><br>
+            <button id="convert" class="btn" type="submit">Convert</button>
+            <br><br>
+            <div id="result"></div>
+        </div>
+    </div>
+    <script>
+        const foodData = {
+            "Protein Powder": { cups: 1, grams: 120 },
+            "Oats": { cups: 1, grams: 80 },
+            "Greek Yogurt": { cups: 1, grams: 245 },
+            "Egg Whites": { cups: 1, grams: 240 },
+            "Chicken Breast": { cups: 1, grams: 140 },
+            "Almond Flour": { cups: 1, grams: 96 },
+            "Coconut Flour": { cups: 1, grams: 128 },
+            "Sweetener (Stevia or Erythritol)": { cups: 1, grams: 190 },
+            "Cocoa Powder": { cups: 1, grams: 100 },
+            "Peanut Butter": { tablespoons: 1, grams: 16 },
+            "Cottage Cheese": { cups: 1, grams: 210 },
+            "Low-Fat Cheese (Mozzarella or Cheddar)": { cups: 1, grams: 120 },
+            "Spinach (Fresh)": { cups: 1, grams: 30 },
+            "Zucchini": { cups: 1, grams: 125 },
+            "Cauliflower (Riced)": { cups: 1, grams: 85 },
+            "Berries (Strawberries, Blueberries, Raspberries)": { cups: 1, grams: 150 },
+            "Protein Cookie Butter": { tablespoons: 1, grams: 16 },
+            "Quinoa": { cups: 1, grams: 185 },
+            "Brown Rice": { cups: 1, grams: 195 },
+            "Nut Milks (Almond Milk)": { cups: 1, grams: 240 },
+            "Unsweetened Applesauce": { cups: 1, grams: 244 },
+            "Coconut Oil": { tablespoons: 1, grams: 14 },
+            "Spray Oils": { tablespoons: 1, grams: 14 },
+            "Chia Seeds": { tablespoons: 1, grams: 12 },
+            "Flax Seeds": { tablespoons: 1, grams: 10 },
+            "Fat-Free Cream Cheese": { cups: 1, grams: 240 },
+            "Sugar-Free Syrup": { cups: 1, grams: 320 },
+            "Protein Pancake Mix": { cups: 1, grams: 120 },
+            "Bell Peppers": { cups: 1, grams: 150 },
+            "Tomatoes": { cups: 1, grams: 180 },
+            "Onions": { cups: 1, grams: 160 },
+            "Lemon Juice": { tablespoons: 1, grams: 15 },
+            "Soy Sauce": { tablespoons: 1, grams: 18 },
+            "Salsa": { cups: 1, grams: 260 },
+            "Baking Powder": { teaspoons: 1, grams: 4 },
+            "Baking Soda": { teaspoons: 1, grams: 5 },
+            "Vanilla Extract": { teaspoons: 1, grams: 4.2 },
+            "Honey or Maple Syrup": { cups: 1, grams: 340 },
+            "Cornstarch": { cups: 1, grams: 120 },
+            "Tuna": { cans: 1, grams: 140 },
+            "Pasta": { cups: 1, grams: 140 },
+            "Fat-Free Sour Cream": { cups: 1, grams: 240 },
+            "Fat-Free Greek Yogurt": { cups: 1, grams: 245 },
+            "Sugar-Free Jelly": { tablespoons: 1, grams: 17 },
+            "Coconut Aminos": { tablespoons: 1, grams: 17 },
+            "Panko Breadcrumbs": { cups: 1, grams: 50 },
+            "Pumpkin Puree": { cups: 1, grams: 240 },
+            "Fat-Free Whipped Cream": { cups: 1, grams: 60 },
+            "Milk": { cups: 1, grams: 245 },
+            "Powdered Peanut Butter": { tablespoons: 1, grams: 6 },
+            "Sugar-Free Chocolate Syrup": { tablespoons: 1, grams: 20 },
+            "Low-Fat Mayonnaise": { cups: 1, grams: 230 },
+            "Frozen Peas": { cups: 1, grams: 135 },
+            "Frozen Spinach": { cups: 1, grams: 156 },
+            "Almonds": { cups: 1, grams: 143 },
+            "Walnuts": { cups: 1, grams: 120 },
+            "Pistachios": { cups: 1, grams: 123 },
+            "Cashews": { cups: 1, grams: 137 },
+            "Dried Fruit (like Raisins or Cranberries)": { cups: 1, grams: 145 }
+        };
+
+
+       // Populate food dropdown
+        const foodSelect = document.getElementById('food');
+        for (const food in foodData) {
+            const option = document.createElement('option');
+            option.value = food;
+            option.textContent = food;
+            foodSelect.appendChild(option);
+        }
+
+        // Convert units
+        function convert(food, fromUnit, toUnit, amount) {
+            const foodInfo = foodData[food];
+            if (!foodInfo) return null;
+
+            let gramsAmount;
+            if (fromUnit === 'grams') {
+                gramsAmount = amount;
+            } else if (foodInfo[fromUnit]) {
+                gramsAmount = amount * (foodInfo['grams'] / foodInfo[fromUnit]);
+            } else {
+                return null; // Invalid fromUnit
+            }
+
+            if (toUnit === 'grams') {
+                return gramsAmount;
+            } else if (foodInfo[toUnit]) {
+                return gramsAmount / (foodInfo['grams'] / foodInfo[toUnit]);
+            } else {
+                return null; // Invalid toUnit
+            }
+        }
+
+        // Handle button click
+        document.getElementById('convert').addEventListener('click', function(e) {
+            e.preventDefault();
+            const food = document.getElementById('food').value;
+            const fromUnit = document.getElementById('fromUnit').value;
+            const toUnit = document.getElementById('toUnit').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+
+            if (food === '---' || fromUnit === '---' || toUnit === '---' || isNaN(amount)) {
+                document.getElementById('result').textContent = 'Please fill in all fields with valid values.';
+                return;
+            }
+
+            const result = convert(food, fromUnit, toUnit, amount);
+            if (result !== null) {
+                document.getElementById('result').textContent = `${amount} ${fromUnit} of ${food} is equal to ${result.toFixed(2)} ${toUnit}`;
+            } else {
+                document.getElementById('result').textContent = 'Invalid conversion. Please check your inputs.';
+            }
+        });
+    </script>
+</body>
+</html>
